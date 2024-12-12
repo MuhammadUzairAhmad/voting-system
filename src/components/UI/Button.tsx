@@ -2,9 +2,10 @@ interface ButtonProps {
   variant?: 'light' | 'blue';
   onClick?: () => void;
   children: React.ReactNode;
+  width?: string;
 }
 
-const Button = ({ variant = 'light', onClick, children }: ButtonProps) => {
+const Button = ({ variant = 'light', onClick, children , width = "w-fit"}: ButtonProps) => {
   const baseStyles = "text-md font-semibold px-4 py-2 rounded-md cursor-pointer";
   
   const variantStyles = {
@@ -14,7 +15,7 @@ const Button = ({ variant = 'light', onClick, children }: ButtonProps) => {
 
   return (
     <button 
-      className={`${baseStyles} ${variantStyles[variant]}`}
+      className={`${baseStyles} ${variantStyles[variant]} ${width}`}
       onClick={onClick}
     >
       {children}
