@@ -25,6 +25,9 @@ const Navbar = () => {
     // Add your search logic here
   };
   console.log("address", address);
+
+  
+
   return (
     <nav className="bg-light-background dark:bg-dark-background border-gray-200 dark:border-gray-600 border-b-2 text-light-text dark:text-dark-text">
       <div className="flex justify-between items-center mx-auto px-2 sm:px-6 lg:px-8 py-4">

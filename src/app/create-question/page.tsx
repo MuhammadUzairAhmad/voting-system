@@ -1,16 +1,18 @@
 "use client";
 import Button from "@/components/UI/Button";
 import TextInput from "@/components/UI/TextInput";
+import { writeContractHelper } from "@/helperFile/helperFunction";
 import axios from "axios";
 import React, { useState } from "react";
 import { MdDelete } from "react-icons/md";
+import { Bounce, toast } from "react-toastify";
 
 const CreateQuestion = () => {
   const [question, setQuestion] = useState("");
   const [voteType, setVoteType] = useState("single");
-  const [options, setOptions] = useState(["", ""]); // Start with a minimum of 2 options
-  const [correctAnswer, setCorrectAnswer] = useState("");
-  const [image, setImage] = useState<File | null>(null); // State for image input
+  const [options, setOptions] = useState(["Yes", "No"]);
+  const [image, setImage] = useState<File | null>(null);
+  const [endDate, setEndDate] = useState<string>("");
 
   const handleOptionChange = (index: number, value: string) => {
     const newOptions = [...options];
@@ -32,67 +34,151 @@ const CreateQuestion = () => {
 
   const handleVoteTypeChange = (type: string) => {
     setVoteType(type);
-    setOptions(["", ""]); // Reset options when vote type changes
-    setCorrectAnswer(""); // Reset correct answer when vote type changes
+    if (type === "single") {
+      setOptions(["Yes", "No"]); // Reset options to Yes/No for single vote type
+    } else {
+      setOptions(["", ""]);
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.size <= 1024 * 1024) { // Check if file size is less than or equal to 1MB
+    if (file && file.size <= 1024 * 1024) {
       setImage(file);
     } else {
       alert("Image size must be less than or equal to 1MB.");
     }
   };
 
+  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEndDate(e.target.value);
+  };
+
   const createQuestion = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    if (voteType === "multiple" && !options.includes(correctAnswer)) {
-      console.log("Please enter a valid answer that matches one of the options.");
-      return;
-    }
 
-    if (image) {
-      console.log(`Image selected: ${image.name}`);
-    } else {
-      console.log('Please select a file');
-      return;
-    }
+    try {
+      // Check if question is filled
+      if (question.trim() === "") {
+        toast.error(
+          "Please fill out the question before creating the question!",
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          }
+        );
+        return;
+      }
 
-    const formData = new FormData();
-    formData.append('file', image);
+      // Check if image is selected
+      if (!image) {
+        toast.error("Please select a file!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        return;
+      }
 
-    const response = await axios.post("/api/image", formData)
-console.log("res",response)
-    // const response = await fetch('/api/image', {
-    //   method: 'POST',
-    //   body: formData,
-    // });
+      // Check if options are filled for multiple options vote type
+      if (
+        voteType === "multiple" &&
+        options.some((option) => option.trim() === "")
+      ) {
+        toast.error(
+          "Please fill out all options before creating the question!",
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          }
+        );
+        return;
+      }
 
-    // const data = await response.json();
-    // if (data.success) {
-    //   alert('Image uploaded: ' + data.url);
-    // } else {
-    //   alert('Error uploading image');
-    // }
+      if (!endDate) {
+        toast.error("Please select an end date for the poll!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        return;
+      }
 
-    // Log question details
-    if (voteType === "single") {
-      console.log(
-        `Question: ${question}\nVote Type: ${voteType}\nCorrect Answer: ${correctAnswer}`
-      );
-    } else {
-      console.log(
-        `Question: ${question}\nVote Type: ${voteType}\nOptions: ${options.join(
-          ", "
-        )}\nCorrect Answer: ${correctAnswer}`
-      );
+      const selectedEndDate = new Date(endDate);
+      const currentTime = new Date();
+
+      // Validate that the end date is in the future
+      if (selectedEndDate <= currentTime) {
+        toast.error("The end date must be greater than the current time!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        return;
+      }
+
+      // Convert the end date to seconds (Unix timestamp)
+      const endDateInSeconds =  Math.floor(selectedEndDate.getTime() / 1000);
+      console.log("End Date in Seconds:", endDateInSeconds);
+
+      const formData = new FormData();
+      formData.append("file", image);
+
+      const response = await axios.post("/api/image", formData);
+      console.log("res", response);
+      if (response?.data?.message === "success") {
+        // Blockchain call
+        console.log("all data before call blockchain function", [
+          question,
+          options,
+          endDateInSeconds,
+          response.data.imgUrl,
+        ]);
+        // const transactionReceipt = writeContractHelper(
+        //   "createQuestion",
+        //   [question, options,endDateInSeconds, response.data.imageUrl, ]
+        // );
+        // console.log("transactionReceipt", transactionReceipt);
+      }
+    } catch (error) {
+      console.log("error", error);
     }
   };
 
   return (
-    <div className=" mt-2 bg-light-background2 p-8 dark:bg-dark-background2 max-w-3xl mx-auto shadow-lg rounded-2xl ">
+    <div className="mt-2 bg-light-background2 p-8 dark:bg-dark-background2 max-w-3xl mx-auto shadow-lg rounded-2xl">
       <h1 className="text-2xl font-bold mb-4">Create a Voting Question</h1>
       <div className="mb-4">
         <label htmlFor="questionText" className="block text-lg mb-2">
@@ -171,30 +257,28 @@ console.log("res",response)
               </div>
             ))}
           </div>
-          <Button
-            onClick={addOption}
-            variant="blue"
-          >
+          <Button onClick={addOption} variant="blue">
             Add Option
           </Button>
         </div>
       )}
 
       <div className="mb-4">
-        <label htmlFor="correctAnswer" className="block text-lg mb-2">
-          Correct Answer:
+        <label htmlFor="endDate" className="block text-lg mb-2">
+          End Date:
         </label>
-        <TextInput
-          id="correctAnswer"
-          value={correctAnswer}
-          onChange={(e) => setCorrectAnswer(e.target.value)}
-          placeholder="Enter correct answer (Yes/No or option)"
+        <input
+          type="datetime-local"
+          id="endDate"
+          value={endDate}
+          onChange={handleEndDateChange}
+          className="border rounded-md p-2 text-light-text dark:text-dark-text bg-light-background2 dark:bg-dark-background2"
         />
       </div>
 
       <button
         onClick={(e) => createQuestion(e as any)}
-        className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+        className="bg-blue-600 text-white p-3 rounded-md mt-4 w-full"
       >
         Create Question
       </button>

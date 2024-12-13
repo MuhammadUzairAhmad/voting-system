@@ -61,12 +61,12 @@ const Card = ({
                 key={index}
                 className="flex justify-between items-center px-1 rounded"
               >
-                <Link href={`/market?id=${id}`}>
+                <Link href={`/market?id=${id}&option=${option.text}`}>
                   <span className="text-light-text  dark:text-dark-text ">
                     {option.text}
                   </span>
                 </Link>
-                <span className="text-black dark:text-white flex justify-center items-center gap-2">
+                {/* <span className="text-black dark:text-white flex justify-center items-center gap-2">
                   <Link href={`/market?id=${id}`}>
                     <button className="px-2 py-[2px] text-sm bg-green-300 font-bold text-green-500 hover:bg-green-500 hover:text-white rounded-md transition-all ease-in-out duration-300">
                       Yes
@@ -77,7 +77,7 @@ const Card = ({
                       No
                     </button>
                   </Link>
-                </span>
+                </span> */}
               </div>
             ))}
           </div>
