@@ -60,3 +60,32 @@ export const readContractHelper = async (functionName,args) => {
     throw error;
   }
 };
+
+
+// need here make approved function
+// const tokenApproval = async (value, tokenAddress) => {
+//   try {
+//     const contract = tokenContract(tokenAddress);
+//     const allowance = await contract.allowance(address, hiestiyaProxy);
+//     const allowanceInt = Number(
+//       formatEther(allowance.toString())
+//     ).toLocaleString("fullwide", { useGrouping: false });
+//     if (allowanceInt < Number(value)) {
+//       const { request } = await simulateContract(config, {
+//         abi: erc20Abi,
+//         address: tokenAddress,
+//         functionName: "approve",
+//         //cook totalPrice
+//         args: [hiestiyaProxy, parseEther(value)],
+//       });
+//       const hash = await writeContract(config, request);
+//       const transactionReceipt = await waitForTransactionReceipt(config, {
+//         // confirmations: 2,
+//         hash: hash,
+//       });
+//       toast.success("Token Approval Successful");
+//     }
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };

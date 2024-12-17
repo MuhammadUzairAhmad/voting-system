@@ -159,6 +159,9 @@ const CreateQuestion = () => {
 
       // Convert the end date to seconds (Unix timestamp)
       const endDateInSeconds = Math.floor(selectedEndDate.getTime() / 1000);
+      const currentTimeInSeconds = Math.floor(currentTime.getTime() / 1000);
+
+      const timeDifferenceInSeconds = endDateInSeconds - currentTimeInSeconds;
       // console.log("End Date in Seconds:", endDateInSeconds);
 
       const formData = new FormData();
@@ -177,7 +180,7 @@ const CreateQuestion = () => {
         const transactionReceipt = await writeContractHelper("createPoll", [
           question,
           options,
-          endDateInSeconds,
+          timeDifferenceInSeconds,
           response.data.imgUrl,
         ]);
         if (transactionReceipt) {

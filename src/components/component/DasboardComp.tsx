@@ -34,6 +34,14 @@ const DasboardComp = () => {
   };
   const handleOptionSelect = (label: string) => {
     console.log(`Selected option: ${label}`);
+    if (label === "End") {
+      fetchEndData();
+    } else if (label === "New") {
+      dataFetch(); // Assuming "New" calls the default dataFetch
+    } else if (label === "Trending") {
+      console.log("Trending functionality not yet implemented");
+      // Add functionality here when needed
+    }
   };
 
   const dropdownOptions = [
@@ -46,23 +54,10 @@ const DasboardComp = () => {
       icon: <IoTrendingUpOutline className="h-5 w-5 text-black" />,
     },
     {
-      label: "Ending Soon",
+      label: "End",
       icon: <CiClock2 className="h-5 w-5 text-black" />,
     },
   ];
-
-  // const questions = [
-  //   {
-  //     imageUrl: Logo.src,
-  //     question: "Who will win the 2024 US Presidential Election?",
-  //     options: [
-  //       { text: "Joe Biden" },
-  //       { text: "Donald Trump" },
-  //       { text: "Other" },
-  //     ],
-  //     id: "us-election",
-  //   },
-  // ];
 
   const dataFetch = async () => {
     try {
@@ -84,6 +79,28 @@ const DasboardComp = () => {
       });
     }
   };
+
+  const fetchEndData = async () => {
+    try {
+      const result = await readContractHelper("endPoll");
+      setQuestion(result as QuestionsProps[]); // Update questions state
+      console.log("endPoll", result);
+    } catch (error) {
+      console.log("error", error);
+      toast.error("Error while fetching end polls.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+  };
+  
 
   useEffect(() => {
     if(address){
