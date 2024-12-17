@@ -50,6 +50,11 @@ const dropdownItems: MenuItem[] = [
     bgColor: "bg-blue-100",
   },
   {
+    label: "Create Question",
+    href: "/create-question",
+    bgColor: "bg-blue-100",
+  },
+  {
     label: "Settings",
     href: "/settings",
     active: true,

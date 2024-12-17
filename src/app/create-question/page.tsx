@@ -13,6 +13,7 @@ const CreateQuestion = () => {
   const [options, setOptions] = useState(["Yes", "No"]);
   const [image, setImage] = useState<File | null>(null);
   const [endDate, setEndDate] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleOptionChange = (index: number, value: string) => {
     const newOptions = [...options];
@@ -46,7 +47,17 @@ const CreateQuestion = () => {
     if (file && file.size <= 1024 * 1024) {
       setImage(file);
     } else {
-      alert("Image size must be less than or equal to 1MB.");
+      toast.error("Image size must be less than or equal to 1MB.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     }
   };
 
@@ -56,7 +67,7 @@ const CreateQuestion = () => {
 
   const createQuestion = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setLoading(true);
     try {
       // Check if question is filled
       if (question.trim() === "") {
@@ -76,7 +87,6 @@ const CreateQuestion = () => {
         );
         return;
       }
-
       // Check if image is selected
       if (!image) {
         toast.error("Please select a file!", {
@@ -92,7 +102,6 @@ const CreateQuestion = () => {
         });
         return;
       }
-
       // Check if options are filled for multiple options vote type
       if (
         voteType === "multiple" &&
@@ -114,7 +123,6 @@ const CreateQuestion = () => {
         );
         return;
       }
-
       if (!endDate) {
         toast.error("Please select an end date for the poll!", {
           position: "top-right",
@@ -150,30 +158,51 @@ const CreateQuestion = () => {
       }
 
       // Convert the end date to seconds (Unix timestamp)
-      const endDateInSeconds =  Math.floor(selectedEndDate.getTime() / 1000);
-      console.log("End Date in Seconds:", endDateInSeconds);
+      const endDateInSeconds = Math.floor(selectedEndDate.getTime() / 1000);
+      // console.log("End Date in Seconds:", endDateInSeconds);
 
       const formData = new FormData();
       formData.append("file", image);
 
       const response = await axios.post("/api/image", formData);
-      console.log("res", response);
+      // console.log("res", response);
       if (response?.data?.message === "success") {
         // Blockchain call
-        console.log("all data before call blockchain function", [
+        // console.log("all data before call blockchain function", [
+        //   question,
+        //   options,
+        //   endDateInSeconds,
+        //   response.data.imgUrl,
+        // ]);
+        const transactionReceipt = await writeContractHelper("createPoll", [
           question,
           options,
           endDateInSeconds,
           response.data.imgUrl,
         ]);
-        // const transactionReceipt = writeContractHelper(
-        //   "createQuestion",
-        //   [question, options,endDateInSeconds, response.data.imageUrl, ]
-        // );
-        // console.log("transactionReceipt", transactionReceipt);
+        if (transactionReceipt) {
+          setImage(null);
+          setQuestion("");
+          setEndDate("");
+          setVoteType("single");
+          // console.log("transactionReceipt", transactionReceipt);
+          toast.success("Created Successfully", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
+        }
       }
     } catch (error) {
-      console.log("error", error);
+      console.log("error waiting creating question", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -278,9 +307,10 @@ const CreateQuestion = () => {
 
       <button
         onClick={(e) => createQuestion(e as any)}
+        disabled={loading === true}
         className="bg-blue-600 text-white p-3 rounded-md mt-4 w-full"
       >
-        Create Question
+        {loading ? "loading..." : "Create Question"}
       </button>
     </div>
   );

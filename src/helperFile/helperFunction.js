@@ -12,9 +12,9 @@ import {
 } from "@wagmi/core";
 
 // export const decimalPoint = 18;
-// export const tokenAddress = "0x2523F112EFD0b4c6FD40D890fF2C82B750C046Ed";
-export const contractAddress = "0x7A082F6D931860d3f8D213eD5dC5bd829a491E29";
-// export const zeroAddress = "0x0000000000000000000000000000000000000000";
+ export const tokenAddress = "0xEb211892B15f3Fb6D69a1f2e9E6ca1DdD6365715";
+export const contractAddress = "0x50FB25e536baCd112d15719148F88e4893cD49bB";
+ export const zeroAddress = "0x0000000000000000000000000000000000000000";
 
 export const writeContractHelper = async (functionName, args) => {
   try {
@@ -36,14 +36,25 @@ export const writeContractHelper = async (functionName, args) => {
   }
 };
 
-export const readContractHelper = async (functionName) => {
+export const readContractHelper = async (functionName,args) => {
   try {
-    const result = await readContract(config, {
-      abi,
-      address: contractAddress,
-      functionName: functionName,
-    });
-    return result;
+    if(args){
+      const result = await readContract(config, {
+        abi,
+        address: contractAddress,
+        functionName: functionName,
+        args
+      });
+      return result
+    } else {
+      const result = await readContract(config, {
+        abi,
+        address: contractAddress,
+        functionName: functionName,
+        args
+      });
+      return result;
+    }
   } catch (error) {
     console.error("Error in readContractHelper:", error);
     throw error;
