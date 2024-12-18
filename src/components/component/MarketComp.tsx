@@ -13,6 +13,7 @@ import {
   writeContractHelper,
 } from "@/helperFile/helperFunction";
 import CountdownTimer from "./CountdownTimer";
+import Loader from "../Loader/Loader";
 
 interface PollData {
   deadline?: number | string;
@@ -122,8 +123,8 @@ const MarketComp = () => {
   };
   return (
     <>
-      {loading ? (
-        "loading..."
+      {loading  ? (
+        <Loader/>
       ) : (
         <div className="flex gap-2 w-full mt-8">
           {/* Left side */}
