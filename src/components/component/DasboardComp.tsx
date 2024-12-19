@@ -28,19 +28,21 @@ const DasboardComp = () => {
   const { address } = useAccount();
   const [questions, setQuestion] = useState<QuestionsProps[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [currentFilter, setCurrentFilter] = useState<string>("New");
+
   const handleSearch = (value: string) => {
     console.log(value);
   };
 
   const handleOptionSelect = (label: string) => {
+    setCurrentFilter(label);
     console.log(`Selected option: ${label}`);
     if (label === "End") {
       fetchEndData();
     } else if (label === "New") {
-      dataFetch(); // Assuming "New" calls the default dataFetch
+      dataFetch();
     } else if (label === "Trending") {
       console.log("Trending functionality not yet implemented");
-      // Add functionality here when needed
     }
   };
 
@@ -87,7 +89,7 @@ const DasboardComp = () => {
     setLoading(true);
     try {
       const result = await readContractHelper("endPoll");
-      setQuestion(result as QuestionsProps[]); // Update questions state
+      setQuestion(result as QuestionsProps[]);
       console.log("endPoll", result);
     } catch (error) {
       console.log("error", error);
@@ -110,9 +112,14 @@ const DasboardComp = () => {
 
   useEffect(() => {
     if (address) {
-      dataFetch();
+      if (currentFilter === "End") {
+        fetchEndData();
+      } else if (currentFilter === "New") {
+        dataFetch();
+      }
+      // Add Trending case when implemented
     }
-  }, [address]);
+  }, [address, currentFilter]);
 
   return (
     <>

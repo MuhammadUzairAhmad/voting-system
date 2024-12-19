@@ -26,8 +26,8 @@ const metadata = {
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [mainnet,hardhat,polygonAmoy],
-  defaultNetwork: mainnet,
+  networks: [polygonAmoy],
+  defaultNetwork: polygonAmoy,
   metadata,
   features: {
     analytics: true // Optional - defaults to your Cloud configuration

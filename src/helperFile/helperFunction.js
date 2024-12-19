@@ -37,6 +37,7 @@ export const writeContractHelper = async (functionName, args) => {
 };
 
 export const readContractHelper = async (functionName, args) => {
+  console.log("contractAddresscontractAddresscontractAddresscontractAddress",contractAddress)
   try {
     if (args) {
       const result = await readContract(config, {
@@ -51,7 +52,6 @@ export const readContractHelper = async (functionName, args) => {
         abi,
         address: contractAddress,
         functionName: functionName,
-        args,
       });
       return result;
     }
@@ -62,32 +62,32 @@ export const readContractHelper = async (functionName, args) => {
 };
 
 // Helper function for token approval
-const approveToken = async (value, tokenAddress, address, config) => {
-  try {
-    const contract = tokenContract(tokenAddress);
-    const allowance = await contract.allowance(address, contractAddress);
-    const allowanceInt = Number(formatEther(allowance.toString())).toLocaleString("fullwide", { useGrouping: false });
+// const approveToken = async (value, tokenAddress, address, config) => {
+//   try {
+//     const contract = tokenContract(tokenAddress);
+//     const allowance = await contract.allowance(address, contractAddress);
+//     const allowanceInt = Number(formatEther(allowance.toString())).toLocaleString("fullwide", { useGrouping: false });
 
-    if (allowanceInt < Number(value)) {
-      const { request } = await simulateContract(config, {
-        abi: erc20Abi,
-        address: tokenAddress,
-        functionName: "approve",
-        args: [contractAddress, parseEther(value)],
-      });
+//     if (allowanceInt < Number(value)) {
+//       const { request } = await simulateContract(config, {
+//         abi: erc20Abi,
+//         address: tokenAddress,
+//         functionName: "approve",
+//         args: [contractAddress, parseEther(value)],
+//       });
 
-      const hash = await writeContract(config, request);
-      const transactionReceipt = await waitForTransactionReceipt(config, {
-        hash: hash,
-      });
+//       const hash = await writeContract(config, request);
+//       const transactionReceipt = await waitForTransactionReceipt(config, {
+//         hash: hash,
+//       });
 
-      toast.success("Token Approval Successful");
-    }
-  } catch (error) {
-    console.error("Token approval failed:", error);
-    toast.error("Token Approval Failed");
-  }
-};
+//       toast.success("Token Approval Successful");
+//     }
+//   } catch (error) {
+//     console.error("Token approval failed:", error);
+//     toast.error("Token Approval Failed");
+//   }
+// };
 
-export default approveToken;
+// export default approveToken;
 
