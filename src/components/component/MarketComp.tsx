@@ -8,9 +8,11 @@ import { useAppKit } from "@reown/appkit/react";
 import { useAccount } from "wagmi";
 import Button from "../UI/Button";
 import { Bounce, toast } from "react-toastify";
-import {
+import approveToken, {
   contractAddress,
   readContractHelper,
+  tokenAddress,
+  voteAmount,
   writeContractHelper,
 } from "@/helperFile/helperFunction";
 import CountdownTimer from "./CountdownTimer";
@@ -18,6 +20,7 @@ import Loader from "../Loader/Loader";
 import { createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
 import { abi } from "@/helperFile/contractAbis";
+import { config } from "@/config";
 
 interface PollData {
   deadline?: number | string;
@@ -51,6 +54,7 @@ const MarketComp = () => {
     setSelectedKey(key);
   };
 
+
   const handleVote = async () => {
     try {
       if (!selectedKey) {
@@ -68,6 +72,9 @@ const MarketComp = () => {
         });
         return;
       }
+      const amount=await voteAmount();
+      console.log("amount",amount)
+      const approve=await approveToken(amount,tokenAddress,address,config);
       const result = await writeContractHelper("vote", [
         questionId,
         selectedKey,
