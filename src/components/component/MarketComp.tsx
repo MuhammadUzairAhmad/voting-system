@@ -9,11 +9,15 @@ import { useAccount } from "wagmi";
 import Button from "../UI/Button";
 import { Bounce, toast } from "react-toastify";
 import {
+  contractAddress,
   readContractHelper,
   writeContractHelper,
 } from "@/helperFile/helperFunction";
 import CountdownTimer from "./CountdownTimer";
 import Loader from "../Loader/Loader";
+import { createPublicClient, http } from "viem";
+import { mainnet } from "viem/chains";
+import { abi } from "@/helperFile/contractAbis";
 
 interface PollData {
   deadline?: number | string;
@@ -62,7 +66,7 @@ const MarketComp = () => {
           theme: "light",
           transition: Bounce,
         });
-        return 
+        return;
       }
       const result = await writeContractHelper("vote", [
         questionId,
@@ -77,21 +81,41 @@ const MarketComp = () => {
     }
   };
 
-  
-  const myVotevalue = data ? Number(data?.myVote) : 10
-  // console.log("myVotemyVote",myVotevalue)
-  
+  let myVotevalue;
+  if (address && (!data || !data?.myVote)) {
+    const voteNumber = Number(data?.myVote);
+    if (voteNumber > 0) {
+      myVotevalue = voteNumber - 1;
+      setSelectedKey(myVotevalue.toString());
+    } else {
+      myVotevalue = 0;
+    }
+  }
+  console.log("myVotemyVote", myVotevalue);
+
+  const publicClient = createPublicClient({
+    chain: mainnet,
+    transport: http("https://rpc-amoy.polygon.technology/"),
+  });
 
   const fetchDataByID = async () => {
     setLoading(true);
     try {
       // console.log("questionId", questionId);
-      const result : any = await readContractHelper("getPoll", [questionId]);
+
+      const result: any = await publicClient.readContract({
+        address: contractAddress,
+        abi: abi,
+        functionName: "getPoll",
+        args: [questionId],
+      });
+
+      // const result : any = await readContractHelper("getPoll", [questionId]);
       console.log("getPoll", result);
       console.log("getPoll", result?.myVote);
-      if(Number(result?.myVote) > 0){
-        const newValue = Number(result?.myVote) -1
-        setSelectedKey(newValue.toString())
+      if (Number(result?.myVote) > 0) {
+        const newValue = Number(result?.myVote) - 1;
+        setSelectedKey(newValue.toString());
       }
       setData(result as PollData);
     } catch (error) {
@@ -113,18 +137,18 @@ const MarketComp = () => {
   };
 
   useEffect(() => {
-    if (questionId && address) {
+    if (questionId) {
       fetchDataByID();
     }
-  }, [questionId, address]);
+  }, [questionId]);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const handleCountdownEnd = () => {
     setIsButtonDisabled(true); // Disable the button when countdown ends
   };
   return (
     <>
-      {loading  ? (
-        <Loader/>
+      {loading ? (
+        <Loader />
       ) : (
         <div className="flex gap-2 w-full mt-8">
           {/* Left side */}
@@ -146,18 +170,18 @@ const MarketComp = () => {
                   {data?.question}
                 </h3>
                 <div className="hidden md:flex">
-                <CountdownTimer
-                  endDateInSeconds={Number(data?.deadline)}
-                  onCountdownEnd={handleCountdownEnd}
-                />
+                  <CountdownTimer
+                    endDateInSeconds={Number(data?.deadline)}
+                    onCountdownEnd={handleCountdownEnd}
+                  />
                 </div>
               </div>
             </div>
             <div className="w-full my-2 justify-center flex md:hidden">
-            <CountdownTimer
-                  endDateInSeconds={Number(data?.deadline)}
-                  onCountdownEnd={handleCountdownEnd}
-                />
+              <CountdownTimer
+                endDateInSeconds={Number(data?.deadline)}
+                onCountdownEnd={handleCountdownEnd}
+              />
             </div>
             <div className="h-[1px] w-full bg-gray-100 dark:bg-gray-600 my-3"></div>
 
@@ -198,14 +222,20 @@ const MarketComp = () => {
               ""
             ) : (
               <>
-                {data && (
-                  <button
-                    className="text-white bg-light-bluetext w-full dark:bg-dark-bluetext hover:bg-opacity-80 dark:hover:bg-opacity-80 text-md font-semibold px-4 py-2 rounded-md cursor-pointer"
-                    onClick={handleVote}
-                    disabled={Number(data?.myVote) > 0}
-                  >
-                    Vote
-                  </button>
+                {address ? (
+                  data && (
+                    <button
+                      className="text-white bg-light-bluetext w-full dark:bg-dark-bluetext hover:bg-opacity-80 dark:hover:bg-opacity-80 text-md font-semibold px-4 py-2 rounded-md cursor-pointer"
+                      onClick={handleVote}
+                      disabled={Number(data?.myVote) > 0}
+                    >
+                      Vote
+                    </button>
+                  )
+                ) : (
+                  <Button variant="blue" width="w-full" onClick={handleOpen}>
+                    Log In To Vote
+                  </Button>
                 )}
               </>
             )}

@@ -12,10 +12,16 @@ import { PiStarThin } from "react-icons/pi";
 import { FaRegStar } from "react-icons/fa";
 import Card from "./Card";
 import Logo from "@/assets/img/logo.png";
-import { readContractHelper } from "@/helperFile/helperFunction";
+import {
+  contractAddress,
+  readContractHelper,
+} from "@/helperFile/helperFunction";
 import { Bounce, toast } from "react-toastify";
 import { useAccount } from "wagmi";
 import Loader from "../Loader/Loader";
+import { createPublicClient, http } from "viem";
+import { mainnet } from "viem/chains";
+import { abi } from "@/helperFile/contractAbis";
 
 interface QuestionsProps {
   pollImageUrl: string;
@@ -29,6 +35,7 @@ const DasboardComp = () => {
   const [questions, setQuestion] = useState<QuestionsProps[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [currentFilter, setCurrentFilter] = useState<string>("New");
+  const [hasInitialData, setHasInitialData] = useState<boolean>(false);
 
   const handleSearch = (value: string) => {
     console.log(value);
@@ -61,14 +68,28 @@ const DasboardComp = () => {
     },
   ];
 
+  const publicClient = createPublicClient({
+    chain: mainnet,
+    transport: http("https://rpc-amoy.polygon.technology/"),
+  });
+
   const dataFetch = async () => {
     setLoading(true);
     try {
-      const result = await readContractHelper("getAllActivePolls");
+      const result = await publicClient.readContract({
+        address: contractAddress,
+        abi: abi,
+        functionName: "getAllActivePolls",
+      });
+
       setQuestion(result as QuestionsProps[]);
+      if ((result as QuestionsProps[]).length > 0) {
+        setHasInitialData(true);
+      }
       console.log("getAllActivePolls", result);
     } catch (error) {
       console.log("error", error);
+      setQuestion([]);
       toast.error("Error while fetching data.", {
         position: "top-right",
         autoClose: 5000,
@@ -88,38 +109,42 @@ const DasboardComp = () => {
   const fetchEndData = async () => {
     setLoading(true);
     try {
-      const result = await readContractHelper("endPoll");
+      const result = await publicClient.readContract({
+        address: contractAddress,
+        abi: abi,
+        functionName: "endPoll",
+      });
+
       setQuestion(result as QuestionsProps[]);
       console.log("endPoll", result);
     } catch (error) {
       console.log("error", error);
-      setQuestion([])
-      toast.error("Error while fetching end polls.", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
-      });
+      setQuestion([]);
+      if (!hasInitialData) {
+        toast.error("Error while fetching end polls.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+      }
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (address) {
-      if (currentFilter === "End") {
-        fetchEndData();
-      } else if (currentFilter === "New") {
-        dataFetch();
-      }
-      // Add Trending case when implemented
+    if (currentFilter === "End") {
+      fetchEndData();
+    } else if (currentFilter === "New") {
+      dataFetch();
     }
-  }, [address, currentFilter]);
+  }, [currentFilter]);
 
   return (
     <>
@@ -143,20 +168,28 @@ const DasboardComp = () => {
       {loading ? (
         <Loader />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 my-8">
-          {questions.map((question, index) => (
-            <Card
-              key={index}
-              imageUrl={question?.pollImageUrl}
-              question={question?.question}
-              options={question.options.map((option, index) => ({
-                text: option,
-                optionId: index,
-              }))}
-              id={question.pollId}
-            />
-          ))}
-        </div>
+        <>
+          {questions.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 my-8">
+              {questions.map((question, index) => (
+                <Card
+                  key={index}
+                  imageUrl={question?.pollImageUrl}
+                  question={question?.question}
+                  options={question.options.map((option, index) => ({
+                    text: option,
+                    optionId: index,
+                  }))}
+                  id={question.pollId}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className=" text-gray-500 flex justify-center items-center h-[80vh] text-2xl font-bold dark:text-gray-300">
+              No data available for this filter.
+            </div>
+          )}
+        </>
       )}
     </>
   );
