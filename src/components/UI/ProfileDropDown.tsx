@@ -32,44 +32,59 @@ const dropdownMenuItems: MenuItem[] = [
     bgColor: "bg-blue-100",
   },
   {
-    label: "Dashboard",
-    href: "/dashboard",
-    active: true,
+    label: "New",
+    href: "/?filter=New",
     bgColor: "bg-blue-100",
   },
   {
-    label: "Activity",
-    href: "/activity",
-    bgColor: "bg-green-100",
+    label: "Trending",
+    href: "/?filter=Trending",
+    bgColor: "bg-blue-100",
   },
+  {
+    label: "End",
+    href: "/?filter=End",
+    bgColor: "bg-blue-100",
+  },
+  // {
+  //   label: "Dashboard",
+  //   href: "/dashboard",
+  //   active: true,
+  //   bgColor: "bg-blue-100",
+  // },
+  // {
+  //   label: "Activity",
+  //   href: "/activity",
+  //   bgColor: "bg-green-100",
+  // },
 ];
 const dropdownItems: MenuItem[] = [
-  {
-    label: "Profile",
-    href: "/profile",
-    bgColor: "bg-blue-100",
-  },
+  // {
+  //   label: "Profile",
+  //   href: "/profile",
+  //   bgColor: "bg-blue-100",
+  // },
   {
     label: "Create Question",
     href: "/create-question",
     bgColor: "bg-blue-100",
   },
-  {
-    label: "Settings",
-    href: "/settings",
-    active: true,
-    bgColor: "bg-blue-100",
-  },
-  {
-    label: "Terms & Conditions",
-    href: "/settings",
-    bgColor: "bg-green-100",
-  },
-  {
-    label: "Rewards",
-    href: "/rewards",
-    bgColor: "bg-orange-100",
-  },
+  // {
+  //   label: "Settings",
+  //   href: "/settings",
+  //   active: true,
+  //   bgColor: "bg-blue-100",
+  // },
+  // {
+  //   label: "Terms & Conditions",
+  //   href: "/settings",
+  //   bgColor: "bg-green-100",
+  // },
+  // {
+  //   label: "Rewards",
+  //   href: "/rewards",
+  //   bgColor: "bg-orange-100",
+  // },
 ];
 
 const ProfileDropDown = () => {
@@ -80,10 +95,10 @@ const ProfileDropDown = () => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = () => {
-    if(address){  
+    if (address) {
       navigator.clipboard.writeText(address);
       setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000); 
+      setTimeout(() => setIsCopied(false), 2000);
     }
   };
   return (
@@ -136,41 +151,42 @@ const ProfileDropDown = () => {
             )}
             <div className="h-[1px] w-full bg-gray-100 dark:bg-gray-600 my-2"></div>
             {address ? (
-              <div className="flex flex-col gap-2 px-2">
-                <Link
-                  href={"/Portfolio"}
-                  className="flex gap-2 items-center justify-between py-2 px-4 rounded-md text-light-text2 font-semibold text-md dark:text-dark-text2 hover:bg-light-background2 dark:hover:bg-dark-background2"
-                >
-                  <span>Portfolio</span>
-                  <span className="m-0 p-0 text-green-500">$0.00</span>
-                </Link>
-                <Link
-                  href={"/Cash"}
-                  className=" flex justify-between items-center py-2 px-4 rounded-md text-light-text2 font-semibold text-md dark:text-dark-text2 hover:bg-light-background2 dark:hover:bg-dark-background2"
-                >
-                  <span>Cash</span>
-                  <span className="m-0 p-0 text-green-500 font-semibold">
-                    $0.00
-                  </span>
-                </Link>
-              </div>
+              <></>
             ) : (
+              // <div className="flex flex-col gap-2 px-2">
+              //   <Link
+              //     href={"/Portfolio"}
+              //     className="flex gap-2 items-center justify-between py-2 px-4 rounded-md text-light-text2 font-semibold text-md dark:text-dark-text2 hover:bg-light-background2 dark:hover:bg-dark-background2"
+              //   >
+              //     <span>Portfolio</span>
+              //     <span className="m-0 p-0 text-green-500">$0.00</span>
+              //   </Link>
+              //   <Link
+              //     href={"/Cash"}
+              //     className=" flex justify-between items-center py-2 px-4 rounded-md text-light-text2 font-semibold text-md dark:text-dark-text2 hover:bg-light-background2 dark:hover:bg-dark-background2"
+              //   >
+              //     <span>Cash</span>
+              //     <span className="m-0 p-0 text-green-500 font-semibold">
+              //       $0.00
+              //     </span>
+              //   </Link>
+              // </div>
               <div className="flex flex-col gap-2 px-2">
                 <div
                   className="py-2 px-4 rounded-md text-light-text2 font-semibold text-md dark:text-dark-text2 hover:bg-light-background2 dark:hover:bg-dark-background2"
                   onClick={() => open()}
                 >
-                  Log In
+                  Connect Wallet
                 </div>
-                <div
+                {/* <div
                   className="py-2 px-4 rounded-md text-light-text2 font-semibold text-md dark:text-dark-text2 hover:bg-light-background2 dark:hover:bg-dark-background2"
                   onClick={() => open()}
                 >
                   Sign Up
-                </div>
+                </div> */}
               </div>
             )}
-            <div className="h-[1px] w-full bg-gray-100 dark:bg-gray-600 my-2"></div>
+            {/* <div className="h-[1px] w-full bg-gray-100 dark:bg-gray-600 my-2"></div> */}
 
             <div className="lg:hidden flex flex-col gap-2 mt-1 px-2">
               {dropdownMenuItems.map((item, index) => (
@@ -185,17 +201,20 @@ const ProfileDropDown = () => {
             </div>
             <div className=" lg:hidden block h-[1px] w-full bg-gray-100 dark:bg-gray-600 my-2"></div>
 
-            <div className="flex flex-col gap-2 mt-1 px-2">
-              {dropdownItems.map((item, index) => (
-                <Link
-                  key={index}
-                  className="flex items-center justify-between py-2 px-4 rounded-md text-light-text2 font-semibold text-md dark:text-dark-text2 hover:bg-light-background2 dark:hover:bg-dark-background2"
-                  href={item.href}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
+            {address && (
+              <div className="flex flex-col gap-2 mt-1 px-2">
+                {dropdownItems.map((item, index) => (
+                  <Link
+                    key={index}
+                    className="flex items-center justify-between py-2 px-4 rounded-md text-light-text2 font-semibold text-md dark:text-dark-text2 hover:bg-light-background2 dark:hover:bg-dark-background2"
+                    href={item.href}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+
             <div className="px-2">
               <ThemeToggle />
               {/* <div className="w-full">

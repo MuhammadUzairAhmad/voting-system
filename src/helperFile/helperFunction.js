@@ -3,6 +3,7 @@ import axios from "axios";
 import { formatEther, parseEther } from "viem";
 import { erc20Abi, abi } from "./contractAbis";
 import { config } from "@/config";
+import { toast } from "react-toastify";
 
 import {
   simulateContract,
@@ -12,8 +13,8 @@ import {
 } from "@wagmi/core";
 
 // export const decimalPoint = 18;
-export const tokenAddress = "0xEb211892B15f3Fb6D69a1f2e9E6ca1DdD6365715";
-export const contractAddress = "0x50FB25e536baCd112d15719148F88e4893cD49bB";
+export const tokenAddress = "0x0Dbe1FC2844a09E277AFbc19C4E86F52dBFC0C72";
+export const contractAddress = "0x67fc52bF7FC8e6c899573C135c929882FaD9Bc3E";
 export const zeroAddress = "0x0000000000000000000000000000000000000000";
 
 export const writeContractHelper = async (functionName, args) => {
@@ -37,7 +38,7 @@ export const writeContractHelper = async (functionName, args) => {
 };
 
 export const readContractHelper = async (functionName, args) => {
-  console.log("contractAddresscontractAddresscontractAddresscontractAddress",contractAddress)
+  // console.log("contractAddresscontractAddresscontractAddresscontractAddress",contractAddress)
   try {
     if (args) {
       const result = await readContract(config, {
@@ -67,7 +68,7 @@ export const voteAmount=async()=>{
 // Helper function for token approval
 const approveToken = async (value, tokenAddress, address, config) => {
   try {
-    const provider = new ethers.JsonRpcProvider("https://rpc-amoy.polygon.technology/");
+    const provider = new ethers.JsonRpcProvider("https://rpc.testnet.fantom.network/");
     const contract = new ethers.Contract(tokenAddress, erc20Abi, provider);
     const allowance = await contract.allowance(address, contractAddress);
     const allowanceInt = Number(formatEther(allowance.toString())).toLocaleString("fullwide", { useGrouping: false });

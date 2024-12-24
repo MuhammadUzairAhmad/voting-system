@@ -24,20 +24,20 @@ const dropdownItems: MenuItem[] = [
   {
     icon: <WiStars className="w-5 h-5" />,
     label: "New",
-    href: "/",
+    href: "/?filter=New",
     active: true,
     bgColor: "bg-blue-100",
   },
   {
     icon: <IoTrendingUpOutline className="w-5 h-5" />,
     label: "Trending",
-    href: "/settings",
+    href: "/?filter=Trending",
     bgColor: "bg-green-100",
   },
   {
     icon: <CiClock2 className="w-5 h-5" />,
-    label: "Ending Soon",
-    href: "/profile",
+    label: "End",
+    href: "/?filter=End",
     bgColor: "bg-orange-100",
   },
 ];
@@ -92,8 +92,6 @@ const MarketDropdown = () => {
         )}
       </div>
     </div>
-    // <div className="relative">
-    // </div>
   );
 };
 

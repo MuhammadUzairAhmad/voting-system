@@ -15,14 +15,14 @@ interface CardProps {
 }
 
 const Card = ({ imageUrl, question, options, id }: CardProps) => {
-  console.log("options",options)
+  // console.log("options",options)
   return (
     <div className="bg-light-background2 hover:opacity-80 hover:bg-white dark:bg-dark-background2 px-4 py-2 rounded-lg shadow-md overflow-hidden">
       {/* Image and Question Section */}
       <div className=" flex gap-2 items-center md:items-start justify-start md:justify-center relative pt-2">
           {imageUrl === "" ? "" :
         <div className="h-12 w-12 relative">
-          <Image src={imageUrl} alt={question} fill className="object-cover" />
+          <Image src={imageUrl.startsWith('https') ? imageUrl : ''} alt={question} fill className="object-cover" />
         </div>
           }
         <Link href={`/market?id=${id}`}>

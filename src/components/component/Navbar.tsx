@@ -14,19 +14,17 @@ import { useAppKit } from "@reown/appkit/react";
 import { useAccount } from "wagmi";
 
 const Navbar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   const { open } = useAppKit();
   const { address } = useAccount();
 
-  const handleSearch = (value: string) => {
-    console.log("Search value:", value);
-    // Add your search logic here
-  };
-  console.log("address", address);
-
-  
+  // const handleSearch = (value: string) => {
+  //   console.log("Search value:", value);
+  //   // Add your search logic here
+  // };
+  // console.log("address", address);
 
   return (
     <nav className="bg-light-background dark:bg-dark-background border-gray-200 dark:border-gray-600 border-b-2 text-light-text dark:text-dark-text">
@@ -42,17 +40,17 @@ const Navbar = () => {
           </Link>
           {/* serach bar  */}
 
-          <SearchBar
+          {/* <SearchBar
             onSearch={handleSearch}
             placeholder="Search Markets"
             className="w-48 xl:w-96 hidden md:block"
-          />
+          /> */}
           {/* serach bar  */}
           <div className="hidden lg:flex items-center gap-4">
             {/* Market menus  */}
-            <MarketDropdown />
+            {/* <MarketDropdown /> */}
             {/* Market menus  */}
-            <Link
+            {/* <Link
               href={"/dashboard"}
               className="flex items-center flex-col gap-1 px-3 py-2 rounded-md hover:bg-light-background2 dark:hover:bg-dark-background2 cursor-pointer"
             >
@@ -69,9 +67,9 @@ const Navbar = () => {
               <span className="text-light-text dark:text-dark-text">
                 Activity
               </span>
-            </Link>
-            
-            {address && (
+            </Link> */}
+
+            {/* {address && (
               <>
                 <Link
                   href={"/Portfolio"}
@@ -96,23 +94,23 @@ const Navbar = () => {
                   </span>
                 </Link>
               </>
-            )}
+            )} */}
           </div>
         </div>
 
         <div className="flex items-center gap-4">
-          {address ? 
+          {address ? (
             <Button variant="blue">Desopit</Button>
-          :
-          <>
-          <Button variant="light" onClick={() => open()}>
-            Login
-          </Button>
-          <Button variant="blue" onClick={() => open()}>
-            Sign Up
-          </Button>
-          </>
-          }
+          ) : (
+            <>
+              {/* <Button variant="light" onClick={() => open()}>
+            Connect Wallet
+          </Button> */}
+              <Button variant="blue" onClick={() => open()}>
+                Connect Wallet
+              </Button>
+            </>
+          )}
           {/* after login  */}
           {/* after login  */}
           <ProfileDropDown />

@@ -1,11 +1,13 @@
 "use client";
 import Button from "@/components/UI/Button";
 import TextInput from "@/components/UI/TextInput";
-import { writeContractHelper } from "@/helperFile/helperFunction";
+import { readContractHelper, writeContractHelper } from "@/helperFile/helperFunction";
 import axios from "axios";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 import { Bounce, toast } from "react-toastify";
+import { useAccount } from "wagmi";
 
 const CreateQuestion = () => {
   const [question, setQuestion] = useState("");
@@ -14,6 +16,24 @@ const CreateQuestion = () => {
   const [image, setImage] = useState<File | null>(null);
   const [endDate, setEndDate] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const {address} = useAccount();
+  const router = useRouter();
+
+  // console.log("address", address);
+
+  // useEffect(() => {
+  //   const checkOwner = async () => {
+  //     if(address){
+  //       const result = await readContractHelper("owner")
+  //       if(result !== address){
+  //         router.push("/");
+  //       }else{
+  //         console.log("result", result);
+  //       }
+  //     }
+  //   }
+  //   checkOwner();
+  // }, [address]);
 
   const handleOptionChange = (index: number, value: string) => {
     const newOptions = [...options];
@@ -203,7 +223,15 @@ const CreateQuestion = () => {
         }
       }
     } catch (error) {
-      console.log("error waiting creating question", error);
+      console.error("error waiting creating question", error);
+      toast.error("Error while creating question", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } finally {
       setLoading(false);
     }
