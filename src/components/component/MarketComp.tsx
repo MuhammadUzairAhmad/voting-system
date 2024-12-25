@@ -46,7 +46,8 @@ const MarketComp = () => {
   const [isPollEnd, setIsPollEnd] = useState<boolean>(false);
   const [percentages, setPercentages] = useState<OptionResult[]>([]);
   const [winner, setWinner] = useState<string | null>(null);
-
+  const [noOfVoters, setNoOfVoters] = useState<number | null>(null);
+  const [voteLoading, setVoteLoading] = useState<boolean>(false);
 
   const [data, setData] = useState<PollData>({});
   const [selectedKey, setSelectedKey] = useState<string | null>(
@@ -68,6 +69,7 @@ const MarketComp = () => {
   };
 
   const handleVote = async () => {
+    setVoteLoading(true);
     try {
       if (!selectedKey) {
         // console.log("No option selected.");
@@ -99,6 +101,8 @@ const MarketComp = () => {
       }
     } catch (error) {
       console.error("error", error);
+    } finally {
+      setVoteLoading(false);
     }
   };
 
@@ -115,13 +119,15 @@ const MarketComp = () => {
   // console.log("myVotemyVote", myVotevalue);
 
   // temp
- 
 
   // Calculate percentages and determine the winner
-  const calculateResults = (pollData: { optionVolume: any[]; options: string[] }) => {
+  const calculateResults = (pollData: {
+    optionVolume: any[];
+    options: string[];
+  }) => {
     const { optionVolume, options } = pollData;
 
-    // Convert BigInt to number for calculations 
+    // Convert BigInt to number for calculations
     const votes = optionVolume.map((v) => Number(v));
 
     // Calculate the total votes
@@ -133,7 +139,7 @@ const MarketComp = () => {
         percentages: options.map((opt, idx) => ({
           index: idx,
           percentage: 0,
-          option: opt
+          option: opt,
         })),
         winner: null,
       };
@@ -143,24 +149,26 @@ const MarketComp = () => {
     const percentages = votes.map((vote, idx) => ({
       index: idx,
       percentage: Number(((vote / totalVotes) * 100).toFixed(2)),
-      option: options[idx]
+      option: options[idx],
     }));
 
     // Find the index of the winning option
-    const maxPercentage = Math.max(...percentages.map(p => p.percentage));
-    const winningOptions = percentages.filter(p => p.percentage === maxPercentage);
+    const maxPercentage = Math.max(...percentages.map((p) => p.percentage));
+    const winningOptions = percentages.filter(
+      (p) => p.percentage === maxPercentage
+    );
 
     // Return results
     return {
       percentages,
-      winner: winningOptions.length === 1 ? winningOptions[0].option : null
+      winner: winningOptions.length === 1 ? winningOptions[0].option : null,
     };
   };
 
   // Calculate and display results
-  
+
   // temp
-  
+
   const fetchDataByID = async () => {
     setLoading(true);
 
@@ -190,9 +198,9 @@ const MarketComp = () => {
           setData(result as PollData);
 
           const finalResult = calculateResults(result);
-          setPercentages(finalResult.percentages); // Now storing full option results
+          setPercentages(finalResult.percentages);
+          setNoOfVoters(Number(result?.noOfVoters));
           setWinner(finalResult.winner);
-
         } else {
           const result: any = await readContractHelper("getPoll", [
             questionId,
@@ -208,6 +216,7 @@ const MarketComp = () => {
             const newValue = Number(result?.myVote) - 1;
             setSelectedKey(newValue.toString());
           }
+          setNoOfVoters(Number(result?.noOfVoters));
           setData(result as PollData);
         }
       } else {
@@ -260,17 +269,22 @@ const MarketComp = () => {
     setIsButtonDisabled(true); // Disable the button when countdown ends
   };
 
+  const [distributeLoading, setDistributeLoading] = useState<boolean>(false);
+
   const distributeFunds = async () => {
+    setDistributeLoading(true);
     try {
       if (questionId) {
         const result = await writeContractHelper("endPoll", [questionId]);
         // console.log("result", result);
-        if(result){
+        if (result) {
           fetchDataByID();
         }
       }
     } catch (error) {
       console.error("Error while fetching data by ID", error);
+    } finally {
+      setDistributeLoading(false);
     }
   };
 
@@ -282,6 +296,12 @@ const MarketComp = () => {
         <div className="flex gap-2 w-full mt-8">
           {/* Left side */}
           <div className="lg:w-2/3 w-full">
+            <div className="flex justify-end w-full items-center">
+              <div className=" bg-red-500 px-2 py-1 rounded-md text-md my-4 font-semibold text-light-text dark:text-dark-text">
+                Total Vote:{" "}
+                {noOfVoters}
+              </div>
+            </div>
             <div className="flex flex-col-reverse gap-4 sm:flex-row sm:gap-0 sm:justify-between w-full items-start">
               <div>
                 {data?.pollImageUrl && (
@@ -305,8 +325,9 @@ const MarketComp = () => {
                   <button
                     className="text-white bg-light-bluetext dark:bg-dark-bluetext hover:bg-opacity-80 dark:hover:bg-opacity-80 text-md font-semibold px-4 py-2 rounded-md cursor-pointer"
                     onClick={distributeFunds}
+                    disabled={distributeLoading}
                   >
-                    Distribute Funds
+                    {distributeLoading ? "Distributing..." : "Distribute Funds"}
                   </button>
                 )}
               </div>
@@ -357,14 +378,14 @@ const MarketComp = () => {
                   data && (
                     <button
                       className={`text-white w-full text-md font-semibold px-4 py-2 rounded-md cursor-pointer ${
-                        Number(data?.myVote) > 0
+                        Number(data?.myVote) > 0 || voteLoading
                           ? "bg-gray-400 dark:bg-gray-600"
                           : "bg-light-bluetext dark:bg-dark-bluetext hover:bg-opacity-80 dark:hover:bg-opacity-80"
                       }`}
                       onClick={handleVote}
-                      disabled={Number(data?.myVote) > 0}
+                      disabled={Number(data?.myVote) > 0 || voteLoading}
                     >
-                      Vote
+                      {voteLoading ? "Voting..." : "Vote"}
                     </button>
                   )
                 ) : (
@@ -375,33 +396,36 @@ const MarketComp = () => {
               </>
             )}
 
-            {isPollEnd && <>
-            <h3 className="text-lg my-4 font-semibold text-light-text dark:text-dark-text">
-              Winner is: <span className=" bg-green-500 text-sm text-white px-2 py-1 rounded-md">
-                {winner || 'No winner'}
-                </span> 
-            </h3>
-            <div className="space-y-3 mt-4">
-              {percentages.map((item, index) => (
-                <div key={index} className="relative">
-                  <div className="flex justify-between mb-1">
-                    <span className="text-sm font-medium text-light-text dark:text-dark-text">
-                      {item.option}
+            {isPollEnd && (
+              <>
+                  <h3 className="text-lg my-4 font-semibold text-light-text dark:text-dark-text">
+                    Winner is:{" "}
+                    <span className=" bg-green-500 text-sm text-white px-2 py-1 rounded-md">
+                      {winner || "No winner"}
                     </span>
-                    <span className="text-sm font-medium text-light-text dark:text-dark-text">
-                      {item.percentage}%
-                    </span>
-                  </div>
-                  <div className="w-full h-4 bg-gray-200 dark:bg-gray-700 rounded">
-                    <div
-                      className="h-4 bg-light-bluetext dark:bg-dark-bluetext rounded transition-all duration-500"
-                      style={{ width: `${item.percentage}%` }}
-                    ></div>
-                  </div>
+                  </h3>
+                <div className="space-y-3 mt-4">
+                  {percentages.map((item, index) => (
+                    <div key={index} className="relative">
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm font-medium text-light-text dark:text-dark-text">
+                          {item.option}
+                        </span>
+                        <span className="text-sm font-medium text-light-text dark:text-dark-text">
+                          {item.percentage}%
+                        </span>
+                      </div>
+                      <div className="w-full h-4 bg-gray-200 dark:bg-gray-700 rounded">
+                        <div
+                          className="h-4 bg-light-bluetext dark:bg-dark-bluetext rounded transition-all duration-500"
+                          style={{ width: `${item.percentage}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            </>}
+              </>
+            )}
           </div>
 
           {/* Right side */}

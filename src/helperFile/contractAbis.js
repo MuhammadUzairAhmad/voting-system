@@ -150,13 +150,7 @@ export const abi = [
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      }
-    ],
+    "inputs": [],
     "name": "getAllActivePolls",
     "outputs": [
       {
@@ -200,6 +194,11 @@ export const abi = [
             "internalType": "bool",
             "name": "ended",
             "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "noOfVoters",
+            "type": "uint256"
           }
         ],
         "internalType": "struct VotingSystem.PollDetails[]",
@@ -211,13 +210,7 @@ export const abi = [
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      }
-    ],
+    "inputs": [],
     "name": "getAllEndedPollDetails",
     "outputs": [
       {
@@ -413,6 +406,11 @@ export const abi = [
             "internalType": "bool",
             "name": "ended",
             "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "noOfVoters",
+            "type": "uint256"
           }
         ],
         "internalType": "struct VotingSystem.PollDetails",

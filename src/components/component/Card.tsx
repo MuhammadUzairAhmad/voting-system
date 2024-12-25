@@ -12,9 +12,10 @@ interface CardProps {
   question: string;
   options?: Option[];
   id: string;
+  noOfVoters: number;
 }
 
-const Card = ({ imageUrl, question, options, id }: CardProps) => {
+const Card = ({ imageUrl, question, options, id, noOfVoters }: CardProps) => {
   // console.log("options",options)
   return (
     <div className="bg-light-background2 hover:opacity-80 hover:bg-white dark:bg-dark-background2 px-4 py-2 rounded-lg shadow-md overflow-hidden">
@@ -34,7 +35,7 @@ const Card = ({ imageUrl, question, options, id }: CardProps) => {
 
       {/* Options Section */}
       <div className="py-2">
-        <div className="flex flex-col h-20 gap-1 overflow-auto custom-scrollbar font-semibold">
+        <div className="flex flex-col h-20 sm:h-28 gap-1 overflow-auto mt-2 custom-scrollbar font-semibold">
           {options?.map((option, index) => (
             <div
               key={index}
@@ -44,7 +45,7 @@ const Card = ({ imageUrl, question, options, id }: CardProps) => {
                 href={`/market?id=${id}&option=${option.optionId}`}
                 className="flex justify-between w-full hover:bg-light-background dark:hover:bg-dark-background py-1 rounded-md px-4"
               >
-                <span className="text-light-text  dark:text-dark-text text-sm">
+                <span className="text-light-text  dark:text-dark-text text-sm md:text-md">
                   {option.text}
                 </span>
                 <input
@@ -61,7 +62,7 @@ const Card = ({ imageUrl, question, options, id }: CardProps) => {
 
       {/* Footer Section */}
       <div className="border-t text-sm font-semibold border-gray-200 dark:border-gray-700 py-1">
-        <div>$43 vol.</div>
+        <div>Total Votes: {noOfVoters}</div>
       </div>
     </div>
   );

@@ -26,6 +26,7 @@ interface QuestionsProps {
   question: string;
   options: [any];
   pollId: string;
+  noOfVoters: number;
 }
 
 const DasboardComp = () => {
@@ -86,7 +87,7 @@ const DasboardComp = () => {
         address: contractAddress,
         abi: abi,
         functionName: "getAllActivePolls",
-        args: ["0x0000000000000000000000000000000000000000"],
+        // args: ["0x0000000000000000000000000000000000000000"],
       });
 
       const data = result as QuestionsProps[];
@@ -123,7 +124,7 @@ const DasboardComp = () => {
         address: contractAddress,
         abi: abi,
         functionName: "getAllEndedPollDetails",
-        args: ["0x0000000000000000000000000000000000000000"],
+        // args: ["0x0000000000000000000000000000000000000000"],
       });
       // console.log("resulffgfdgfdgt",result)
       if (result) {
@@ -199,7 +200,7 @@ const DasboardComp = () => {
         <>
           {questions.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 my-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-8">
                 {questions.map((question, index) => (
                   <Card
                     key={index}
@@ -210,6 +211,7 @@ const DasboardComp = () => {
                       optionId: index,
                     }))}
                     id={question.pollId}
+                    noOfVoters={Number(question.noOfVoters)}
                   />
                 ))}
               </div>

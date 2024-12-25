@@ -13,8 +13,8 @@ import {
 } from "@wagmi/core";
 
 // export const decimalPoint = 18;
-export const tokenAddress = "0x0Dbe1FC2844a09E277AFbc19C4E86F52dBFC0C72";
-export const contractAddress = "0x67fc52bF7FC8e6c899573C135c929882FaD9Bc3E";
+export const tokenAddress = "0xce9ea8BccB55cCEDf9d005F8714840B3CED192B3";
+export const contractAddress = "0x50A8eC9cba3E0CF1ca455Fa0C0B89c2B8C571463";
 export const zeroAddress = "0x0000000000000000000000000000000000000000";
 
 export const writeContractHelper = async (functionName, args) => {
