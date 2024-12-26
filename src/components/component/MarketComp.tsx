@@ -48,6 +48,7 @@ const MarketComp = () => {
   const [winner, setWinner] = useState<string | null>(null);
   const [noOfVoters, setNoOfVoters] = useState<number | null>(null);
   const [voteLoading, setVoteLoading] = useState<boolean>(false);
+  const [isLogedData, setIsLogedData] = useState<boolean>(false);
 
   const [data, setData] = useState<PollData>({});
   const [selectedKey, setSelectedKey] = useState<string | null>(
@@ -174,6 +175,7 @@ const MarketComp = () => {
 
     try {
       if (address) {
+        setIsLogedData(true);
         const isPollEnd = await readContractHelper("isPollEnded", [questionId]);
         // console.log("isPollEnded", isPollEnd);
 
@@ -220,6 +222,7 @@ const MarketComp = () => {
           setData(result as PollData);
         }
       } else {
+        setIsLogedData(false);
         const publicClient = createPublicClient({
           chain: mainnet,
           transport: http("https://rpc.testnet.fantom.network/"),
@@ -296,12 +299,14 @@ const MarketComp = () => {
         <div className="flex gap-2 w-full mt-8">
           {/* Left side */}
           <div className="lg:w-2/3 w-full">
+            {isLogedData &&
             <div className="flex justify-end w-full items-center">
               <div className=" bg-red-500 px-2 py-1 rounded-md text-md my-4 font-semibold text-light-text dark:text-dark-text">
                 Total Vote:{" "}
                 {noOfVoters}
               </div>
             </div>
+            }
             <div className="flex flex-col-reverse gap-4 sm:flex-row sm:gap-0 sm:justify-between w-full items-start">
               <div>
                 {data?.pollImageUrl && (

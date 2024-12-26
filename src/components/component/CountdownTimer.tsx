@@ -46,9 +46,33 @@ const CountdownTimer = ({ endDateInSeconds, onCountdownEnd }: { endDateInSeconds
   }, [endDateInSeconds, onCountdownEnd]);
 
   return (
-    <div className="flex space-x-4">
+    <div className="flex flex-wrap gap-4">
       {countdown !== "Poll has ended" ? (
         <>
+          {parseInt(countdown?.split(" ")[0]?.split("y")[0]) > 0 && (
+            <div className="text-center w-20 py-1 bg-light-background2 dark:bg-dark-background2 rounded-lg shadow-lg">
+              <span className="text-lg font-bold">
+                {countdown?.split(" ")[0]?.split("y")[0]}
+              </span>
+              <div className="text-sm text-light-text dark:text-dark-text">Years</div>
+            </div>
+          )}
+          {parseInt(countdown?.split(" ")[1]?.split("m")[0]) > 0 && (
+            <div className="text-center w-20 py-1 bg-light-background2 dark:bg-dark-background2 rounded-lg shadow-lg">
+              <span className="text-lg font-bold">
+                {countdown?.split(" ")[1]?.split("m")[0]}
+              </span>
+              <div className="text-sm text-light-text dark:text-dark-text">Months</div>
+            </div>
+          )}
+          {parseInt(countdown?.split(" ")[2]?.split("d")[0]) > 0 && (
+            <div className="text-center w-20 py-1 bg-light-background2 dark:bg-dark-background2 rounded-lg shadow-lg">
+              <span className="text-lg font-bold">
+                {countdown?.split(" ")[2]?.split("d")[0]}
+              </span>
+              <div className="text-sm text-light-text dark:text-dark-text">Days</div>
+            </div>
+          )}
           <div className="text-center w-20 py-1 bg-light-background2 dark:bg-dark-background2 rounded-lg shadow-lg">
             <span className="text-lg font-bold">
               {countdown?.split(" ")[3]?.split("h")[0]}

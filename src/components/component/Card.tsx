@@ -22,7 +22,7 @@ const Card = ({ imageUrl, question, options, id, noOfVoters }: CardProps) => {
       {/* Image and Question Section */}
       <div className=" flex gap-2 items-center md:items-start justify-start md:justify-center relative pt-2">
           {imageUrl === "" ? "" :
-        <div className="h-12 w-12 relative">
+        <div className="h-12 min-w-[3rem] w-12 relative">
           <Image src={imageUrl.startsWith('https') ? imageUrl : ''} alt={question} fill className="object-cover" />
         </div>
           }
